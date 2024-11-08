@@ -14,6 +14,7 @@ public class foodGenerator implements ActionListener {
     JLabel lDirections;
     JLabel lRandomRest;
     JLabel lEndOfList;
+    JLabel lOneInput;
     JButton bSubmit;
     JButton bReRoll;
     JButton bStartOver;
@@ -46,6 +47,11 @@ public class foodGenerator implements ActionListener {
         lEndOfList.setBounds(50, 120, 425, 90);
         lEndOfList.setFont(font);
 
+        lOneInput = new JLabel();
+        lOneInput.setText("<html>You only entered one restaurant. <br> Please start over and be less picky.</html>");
+        lOneInput.setBounds(50, 120, 425, 90);
+        lOneInput.setFont(font);
+
         bSubmit = new JButton("Submit");
         bSubmit.setBounds(475, 40, 150, 40);
         bSubmit.addActionListener(this);
@@ -72,17 +78,19 @@ public class foodGenerator implements ActionListener {
         frame.add(lDirections);
         frame.add(bSubmit);
         frame.setVisible(true);
+
+        while (true) {
+            if (textField.getText().equals("")) {
+                bSubmit.setEnabled(false);
+            } else {
+                bSubmit.setEnabled(true);
+            }
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == bSubmit) {
-
-            while (true) {
-                if (textField.getText().isEmpty()) {
-                    lDirections.setText("Error, no user input. Try again.");
-                } else break;
-            }
 
             bSubmit.setEnabled(false);
 
@@ -93,13 +101,19 @@ public class foodGenerator implements ActionListener {
 
             int randomIndex = random.nextInt(arrayList.size());
 
-            frame.add(lRandomRest);
-            lRandomRest.setText("You should go to " + arrayList.get(randomIndex));
-            arrayList.remove(randomIndex);
-
-            frame.add(bReRoll);
-            bSubmit.setVisible(false);
-            frame.repaint();
+            if (arrayList.size() == 1) {
+                frame.add(lRandomRest);
+                lRandomRest.setText("You should go to " + arrayList.get(randomIndex));
+                frame.add(bStartOver);
+                frame.add(lOneInput);
+            } else {
+                frame.add(lRandomRest);
+                lRandomRest.setText("You should go to " + arrayList.get(randomIndex));
+                arrayList.remove(randomIndex);
+                frame.add(bReRoll);
+                bSubmit.setVisible(false);
+                frame.repaint();
+            }
         }
 
         if (e.getSource() == bReRoll) {
@@ -123,6 +137,7 @@ public class foodGenerator implements ActionListener {
             frame.remove(bReRoll);
             frame.remove(lRandomRest);
             frame.remove(lEndOfList);
+            frame.remove(lOneInput);
             frame.remove(bStartOver);
             bReRoll.setEnabled(true);
             frame.repaint();
